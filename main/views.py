@@ -1,4 +1,5 @@
 from ast import Return
+from re import template
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
 from django.template import TemplateDoesNotExist
@@ -13,6 +14,12 @@ from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
 from .models import AdvUser
 from .forms import ChangeUserInfoForm
+from django.contrib.auth.views import PasswordChangeView
+from django.views.generic.edit import CreateView
+from .forms import RegisterUserForm
+from django.views.generic.base import TemplateView
+from django.core.signing import BadSignature
+from .utilities import signer
 
 def index(request):
     return render(request, 'main/index.html')
@@ -41,3 +48,56 @@ class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     form_class = ChangeUserInfoForm
     success_url = reverse_lazy('main:profile')
     success_message = 'Данные пользователя изменены'
+
+    def setup(self, request, *args, **kwargs):
+        self.user_id = request.user.pk
+        return super().setup(request, *args, **kwargs)
+    # получение ключа текущего пользователя
+
+    def get_object(self, queryset=None):
+        if not queryset:
+            queryset = self.get_queryset()
+        return get_object_or_404(queryset, pk=self.user_id)
+    # извлечение исправляемой записи
+
+class BPasswordChangeView(SuccessMessageMixin, LoginRequiredMixin, PasswordChangeView):
+    template_name = 'main/password_change.html'
+    success_url = reverse_lazy('main:profile')
+    success_message = 'Пароль пользователя изменен'
+    # смена пароль пользователя
+
+class RegisterUserView(CreateView):
+    model = AdvUser
+    template_name = 'main/register_user.html'
+    form_class = RegisterUserForm
+    success_url = reverse_lazy('main:register_done')
+    # класс регистрирующий пользователя
+
+class RegisterDoneView(TemplateView):
+    template_name = 'main/register_done.html'
+    # вывод сообщения об успешной активации
+
+def user_activate(request, sign):
+    try:
+        username = signer.unsign(sign)
+    except BadSignature:
+        return render(request, 'main/bad_signature.html')
+    user = get_object_or_404(AdvUser, username=username)
+    if user.is_activated:
+        template = 'main/user_is_activated.html'
+    else:
+        template = 'main/activation_done.html'
+        user.is_active =True
+        user.is_activated = True
+        user.save()
+    return render(request, template)
+    # проверка активации
+
+
+
+
+
+
+    #############
+    #### 616 ####  32.16 
+    #############
