@@ -6,6 +6,7 @@ app_name = 'main'
 
 urlpatterns = [
     path('accounts/logout/', BLogoutView.as_view(), name='logout'),
+    path('account/profile/delete/', DeleteUserView.as_view(), name='profile_delete'),
     path('accounts/password/change/', BPasswordChangeView.as_view(), name='password_change'),
     path('account/profile/change/', ChangeUserInfoView.as_view(), name='profile_change'),
     path('accounts/profile/', profile, name='profile'),
