@@ -118,5 +118,5 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
         return get_object_or_404(queryset, pk=self.user_id)
         # поиск по ключу из setup пользователя подлежащего удалению
 
-
-
+def by_rubric(request, pk):
+    pass

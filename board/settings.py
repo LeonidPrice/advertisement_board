@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main.apps.MainConfig',
     'bootstrap4',
+    'django_cleanup',
+    'easy_thumbnails',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +66,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'main.middlewares.board_context_processor',
             ],
         },
     },
@@ -132,3 +135,18 @@ EMAIL_HOST_PASSWORD = 'rzymdspeeajlefjb' #past the key or password app here
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'default from email'
+
+THUMBNAIL_ALIASES = {
+    '': {
+        'default': {
+            'size':(99, 96),
+            'crop': 'scale',
+        },
+    },
+}
+# пресет для масштабирования миниатюр до размера 96х96 px
+
+THUMBNAIL_BASEDIR = 'thumbnails' 
+# папка хранения миниатуюр
+
+
