@@ -1,4 +1,5 @@
-from ast import Return
+from ast import Return, keyword
+from multiprocessing import context
 from re import template
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
@@ -23,6 +24,10 @@ from .utilities import signer
 from django.views.generic.edit import DeleteView
 from django.contrib.auth import logout
 from django.contrib import messages
+from django.core.paginator import Paginator
+from django.db.models import Q
+from .models import SubRubric, Board
+from .forms import SearchForm
 
 def index(request):
     return render(request, 'main/index.html')
@@ -119,4 +124,25 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
         # поиск по ключу из setup пользователя подлежащего удалению
 
 def by_rubric(request, pk):
-    pass
+    rubric = get_object_or_404(SubRubric, pk=pk)
+    boards = Board.objects.filter(is_active=True, rubric=pk)
+
+    # фильтрация объявлений по поисковому запросу
+    if 'keyword' in request.GET:
+        keyword = request.GET['keyword']
+        q = Q(title__icontains=keyword) | Q(content__icontains=keyword)
+        boards = boards.filter(q)
+    else:
+        keyword = ''
+    form = SearchForm(initial={'keyword':keyword}) # для вывода на экран
+    paginator = Paginator(boards,2) # 2 - количество записей для проверки пагинатора
+    if 'page' in request.GET:
+        page_number = request.GET['page']
+    else:
+        page_number = 1
+    page = paginator.get_page(page_number)
+    context = {'rubric': rubric,
+        'page': page,
+        'boards': page.object_list,
+        'form': form}
+    return render(request, 'main/by_rubric.html', context)

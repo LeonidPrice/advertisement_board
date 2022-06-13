@@ -1,3 +1,4 @@
+from ast import keyword
 from dataclasses import fields
 from django import forms
 from django.urls import reverse_lazy
@@ -66,3 +67,7 @@ class SubRubricForm(forms.ModelForm):
     class Meta:
         model = SubRubric
         fields = '__all__'
+
+class SearchForm(forms.Form):
+    keyword = forms.CharField(required=False, max_length=40, label='Введите запрос')
+    # форма поиска по сайту
