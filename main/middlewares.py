@@ -3,6 +3,8 @@ from .models import SubRubric
 def board_context_processor(request):
     context = {}
     context['rubrics'] = SubRubric.objects.all()
+    # обработчик контекста создающий список подрубрик для объявлений
+    # список подрубрик помещается в переменную "rubrics"
     context['keyword'] = ''
     context['all'] = ''
     if 'keyword' in request.GET:
@@ -18,6 +20,6 @@ def board_context_processor(request):
             else:
                 context['all'] = '?page=' + page
     return context
-    # обработчик контекста создающий список подрубрик для объявлений
-    # список подрубрик помещается в переменную "rubrics"
-    # Необходимо добавить в setings.py > TEMPLATES > context_processors как "main.middlewares.board_context_processor"
+    # осуществление "корректного" возврата на предыдущую страницу после поиска
+    
+    # Обработкич необходимо добавить в setings.py > TEMPLATES > context_processors как "main.middlewares.board_context_processor"

@@ -146,3 +146,9 @@ def by_rubric(request, pk):
         'boards': page.object_list,
         'form': form}
     return render(request, 'main/by_rubric.html', context)
+
+def detail(request, rubric_pk, pk):
+    board = get_object_or_404(Board, pk=pk)
+    ais = board.additionalimage_set.all() # дополнительные иллюстрации
+    context = {'board': board, 'ais': ais}
+    return render(request, 'main/detail.html', context)

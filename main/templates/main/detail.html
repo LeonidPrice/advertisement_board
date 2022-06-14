@@ -1,0 +1,25 @@
+{% extends "layout/basic.html" %}
+
+{% block title %}{{ board.title }} - {{ board.rubric.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row">
+        {% if board.image %}
+        <div class="col-md-auto">
+            <img src="{{ board.image.url }}" alt="image" class="main-image">
+        </div>
+        {% endif %}
+        <div class="col">
+            <h2>{{ board.title }}</h2>
+            <p>{{ board.content }}</p>
+            <p class="font-weight-bold">{{ board.price }} грн.</p>
+            <p>{{ board.contacts }}</p>
+            <p class="text-right font-italic">Добавлено {{ board.created_at }}</p>
+        </div>
+    </div>
+</div>
+{% if ais %}
+<div>
+    
+</div>
