@@ -89,7 +89,7 @@ class Board(models.Model):
         ordering = ['-created_at'] # сортировка по последней дате
 # модель публикации объявления
         
-class AdditionalImage(models.Moodel):
+class AdditionalImage(models.Model):
     board = models.ForeignKey(Board, on_delete=models.CASCADE, verbose_name='Объявление')
     image = models.ImageField(upload_to=get_timestamp_path, verbose_name='Изображение')
 

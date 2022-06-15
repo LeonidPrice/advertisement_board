@@ -28,9 +28,14 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from .models import SubRubric, Board
 from .forms import SearchForm
+from django.shortcuts import redirect
+from .forms import BoardForm, AIFormSet
 
 def index(request):
-    return render(request, 'main/index.html')
+    boards = Board.objects.filter(is_active=True)[:10]
+    context = {'boards': boards}
+    return render(request, 'main/index.html', context)
+    # вывод последних 10 сообщений
 
 def other_page(request, page):
     try:
@@ -44,7 +49,10 @@ class BLoginView(LoginView):
 
 @login_required
 def profile(request):
-    return render(request, 'main/profile.html')
+    boards = Board.objects.filter(author=request.pk)
+    # фильтрация по значению поля "автор"
+    context = {'boards': boards}
+    return render(request, 'main/profile.html', context)
 
 class BLogoutView(LoginRequiredMixin, LogoutView):
     template_name = 'main/logout.html'
@@ -150,5 +158,58 @@ def by_rubric(request, pk):
 def detail(request, rubric_pk, pk):
     board = get_object_or_404(Board, pk=pk)
     ais = board.additionalimage_set.all() # дополнительные иллюстрации
-    context = {'board': board, 'ais': ais}
+    
     return render(request, 'main/detail.html', context)
+
+@login_required()
+def profile_board_detail(request, pk):
+    board = get_object_or_404(Board, pk=pk)
+    ais = board.additionalimage_set.all()
+    context = {'board': board, 'ais': ais}
+    return render(request, 'main/profile_bb_detail.html', context)
+
+@login_required
+def profile_board_add(request):
+    if request.method == 'POST':
+        form = BoardForm(request.POST, request.FILES)
+        if form.is_valid():
+            board = form.save()
+            formset = AIFormSet(request.POST, request.FILES, instance=board) # FILES - словарь полученных з формы данных, для избежания потери изображений
+            if formset.is_valid():
+                formset.save()
+                messages.add_message(request, messages.SUCCESS, 'Объявление добавлено')
+                return redirect('main:profile')
+    else:
+        form = BoardForm(initial={'author': request.user.pk}) # указание автора
+        formset = AIFormSet()
+    context = {'form': form, 'formset': formset}
+    return render(request, 'main/profile_board_add.html', context)
+
+@login_required
+def profile_board_change(request, pk):
+    board = get_object_or_404(Board, pk)
+    if request.method == 'POST':
+        form = BoardForm(request.POST, request.FILES, instance=board)
+        if form.is_valid():
+            board = form.save()
+            formset = AIFormSet(request.POST, request.FILES, instance=board)
+            if formset.is_valid():
+                formset.save()
+                messages.add_message(request, messages.SUCCESS, 'Объявление исправлено')
+                return redirect('main:profile')
+    else:
+        form = BoardForm(instance=board)
+        formset = AIFormSet(instance=board)
+    context = {'form': form, 'formset': formset}
+    return render(request, 'main/profile_board_change.html', context)
+
+@login_required
+def profile_board_delete(request, pk):
+    board = get_object_or_404(Board, pk)
+    if request.method == 'POST':
+        board.delete()
+        messages.add_message(request, messages.SUCCESS, 'Объявление удалено')
+        return redirect('main:profile')
+    else:
+        context = {'board': board}
+        return render(request, 'main/profile_board_delete.html', context)

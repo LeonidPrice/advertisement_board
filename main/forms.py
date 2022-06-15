@@ -1,5 +1,6 @@
 from ast import keyword
 from dataclasses import fields
+from email import message
 from django import forms
 from django.urls import reverse_lazy
 from .models import AdvUser
@@ -7,6 +8,8 @@ from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
 from .apps import user_registered
 from .models import SuperRubric, SubRubric
+from django.forms import inlineformset_factory
+from .models import Board, AdditionalImage
 
 class ChangeUserInfoForm(forms.ModelForm):
     email = forms.EmailField(required=True, label='Адрес электронной почты')
@@ -71,3 +74,13 @@ class SubRubricForm(forms.ModelForm):
 class SearchForm(forms.Form):
     keyword = forms.CharField(required=False, max_length=40, label='Введите запрос')
     # форма поиска по сайту
+
+class BoardForm(forms.ModelForm):
+    class Meta:
+        model = Board
+        fields = '__all__'
+        widgets = {'author': forms.HiddenInput}
+
+AIFormSet = inlineformset_factory(Board, AdditionalImage, fields='__all__')
+# наборформ для ввода объявления включающий все поля и загрузку изображений
+

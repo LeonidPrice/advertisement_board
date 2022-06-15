@@ -3,7 +3,7 @@ import datetime
 from .models import AdvUser, Board, AdditionalImage
 from .utilities import send_activation_notification
 from .models import SuperRubric, SubRubric
-from  .forms import SubRubricForm
+from .forms import SubRubricForm
 
 def send_activation_notifications(model_admin, request, queryset):
     for rec in queryset:
@@ -39,7 +39,6 @@ class NonActivatedFilter(admin.SimpleListFilter):
             return queryset.filter(is_active = False, is_activated = False, 
                                   date_joined__date__lt = d)
 
-
 class AdvUserAdmin(admin.ModelAdmin):
     list_display = ('__str__', 
         'is_activated', 
@@ -57,8 +56,6 @@ class AdvUserAdmin(admin.ModelAdmin):
     readonly_fields = ('last_login', 'date_joined')
     actions = (send_activation_notifications,)
 
-admin.site.register(AdvUser, AdvUserAdmin)
-
 class SubRubricInline(admin.TabularInline):
     model = SubRubric
 
@@ -66,12 +63,8 @@ class SuperRubricAdmin(admin.ModelAdmin):
     exclude = ('super_rubric',)
     inlines = (SubRubricInline,)
 
-admin.site.register(SuperRubric, SuperRubricAdmin)
-
 class SubRubricAdmin(admin.ModelAdmin):
     form = SubRubricForm
-
-admin.site.register(SubRubric, SubRubricAdmin)
 
 class AdditionalImageInline(admin.TabularInline):
     model = AdditionalImage
@@ -91,4 +84,7 @@ class BoardAdmin(admin.ModelAdmin):
         'is_active')
     inlines = (AdditionalImageInline,)
 
-admin.site.register(BoardAdmin, Board)
+admin.site.register(AdvUser, AdvUserAdmin)
+admin.site.register(SuperRubric, SuperRubricAdmin)
+admin.site.register(SubRubric, SubRubricAdmin)
+admin.site.register(Board, BoardAdmin)

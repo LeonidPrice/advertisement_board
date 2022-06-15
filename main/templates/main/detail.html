@@ -20,6 +20,13 @@
     </div>
 </div>
 {% if ais %}
-<div>
-    
+<div class="d-flex justify-content-between  flex-wrap mt-5">
+    {% for ai in ais %}
+    <div>
+        <img src="{{ ai.image.url }}" alt="image" class="additional-image">
+    </div>
+    {% endfor %}
 </div>
+{% endif %}
+<p><a href="{% url 'main:by_rubric' pk=board.rubric.pk %} {{ all }}">Назад</a></p>
+{% endfor %}
