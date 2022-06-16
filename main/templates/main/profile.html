@@ -1,5 +1,9 @@
 {% extends "layout/basic.html" %}
 
+{% load bootstrap4 %}
+{% load static %}
+{% load thumbnail %}
+
 {% block title %}Профиль пользователя{% endblock %}
 
 {% block content %}
@@ -17,7 +21,7 @@
         {% url 'main:detail' rubric_pk=rubric.pk pk=board.pk as url %}
         <a href="{{ url }}{{ all }}">
             {% if board.image %}
-            <img src="{% thumbnail board.image 'default' %}" alt="image" class="mr-3">
+            <img class="mr-3" src="{% thumbnail board.image 'default' %}">
             {% else %}
             <img src="{% static 'main/empty.jpg' %}" alt="image" class="mr-3">
             {% endif %}

@@ -30,6 +30,8 @@ from .models import SubRubric, Board
 from .forms import SearchForm
 from django.shortcuts import redirect
 from .forms import BoardForm, AIFormSet
+from .models import Comment
+from .forms import UserCommentForm, GuestCommentForm
 
 def index(request):
     boards = Board.objects.filter(is_active=True)[:10]
@@ -49,7 +51,7 @@ class BLoginView(LoginView):
 
 @login_required
 def profile(request):
-    boards = Board.objects.filter(author=request.pk)
+    boards = Board.objects.filter(author=request.user.pk)
     # фильтрация по значению поля "автор"
     context = {'boards': boards}
     return render(request, 'main/profile.html', context)
@@ -156,9 +158,25 @@ def by_rubric(request, pk):
     return render(request, 'main/by_rubric.html', context)
 
 def detail(request, rubric_pk, pk):
-    board = get_object_or_404(Board, pk=pk)
+    board = Board.objects.get(pk=pk)
     ais = board.additionalimage_set.all() # дополнительные иллюстрации
-    
+    comments = Comment.objects.filter(board=pk, is_active=True)
+    initial = {'board': board.pk}
+    if request.user.is_authenticated:
+        initial['author'] = request.user.username
+        form_class = UserCommentForm
+    else:
+        form_class = GuestCommentForm
+    form = form_class(initial=initial)
+    if request.method == 'POST':
+        c_form = form_class(request.POST)
+        if c_form.is_valid():
+            c_form.save()
+            messages.add_message(request, messages.SUCCESS, 'Комментарий добавлен')
+        else:
+            form = c_form
+            messages.add_message(request, messages.WARNING, 'Комментарий не добавлен')
+    context = {'board': board, 'ais': ais, 'comments': comments, 'form':form}
     return render(request, 'main/detail.html', context)
 
 @login_required()

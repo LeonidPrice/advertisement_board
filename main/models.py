@@ -1,5 +1,6 @@
 from importlib.resources import contents
 from tabnanny import verbose
+from venv import create
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from .utilities import get_timestamp_path
@@ -96,6 +97,18 @@ class AdditionalImage(models.Model):
     class Meta:
         verbose_name = 'Дополнительная иллюстрация'
         verbose_name_plural = 'Дополнительные иллюстрации'
+
+class Comment(models.Model):
+    board = models.ForeignKey(Board, on_delete=models.CASCADE, verbose_name='Объявление')
+    author = models.CharField(max_length=60, verbose_name='Автор')
+    content = models.TextField(verbose_name='Содержание')
+    is_active = models.BooleanField(default=True, db_index=True, verbose_name='Выводить на экран?')
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Опубликован')
+
+    class Meta:
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
+        ordering = [-'created_at']
 
 
 

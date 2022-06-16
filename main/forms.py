@@ -10,6 +10,8 @@ from .apps import user_registered
 from .models import SuperRubric, SubRubric
 from django.forms import inlineformset_factory
 from .models import Board, AdditionalImage
+from captcha.fields import CaptchaField
+from .models import Comment
 
 class ChangeUserInfoForm(forms.ModelForm):
     email = forms.EmailField(required=True, label='Адрес электронной почты')
@@ -84,3 +86,16 @@ class BoardForm(forms.ModelForm):
 AIFormSet = inlineformset_factory(Board, AdditionalImage, fields='__all__')
 # наборформ для ввода объявления включающий все поля и загрузку изображений
 
+class UserCommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        exclude = {'is_active'}
+        widgets = {'board': forms.HiddenInput}
+
+class GuestCommentForm(forms.ModelForm):
+    captcha = CaptchaField(label='Введите текст с картинки', error_messages={'invalid':'Текст введён некорректно'})
+
+    class Meta:
+        model = Comment
+        exclude = {'is_active'}
+        widgets = {'board':forms.HiddenInput}
