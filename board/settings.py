@@ -41,7 +41,10 @@ INSTALLED_APPS = [
     'bootstrap4',
     'django_cleanup',
     'easy_thumbnails',
-    'captcha'
+    'capctha',
+    'rest_framework',
+    'corsheaders',
+    'api.apps.ApiConfig'
 ]
 
 MIDDLEWARE = [
@@ -150,4 +153,5 @@ THUMBNAIL_ALIASES = {
 THUMBNAIL_BASEDIR = 'thumbnails' 
 # папка хранения миниатуюр
 
-
+CORS_ORIGN_ALLOW_ALL = True
+CORS_URLS_RAGEX = r'^/api/.*$'

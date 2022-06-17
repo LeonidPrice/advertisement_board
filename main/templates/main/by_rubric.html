@@ -6,6 +6,9 @@
 
 {% block title %}{{ rubric }}{% endblock %}
 
+{% block searchform %}
+{% endblock %}
+
 {% block content %}
 <h2 class="mb-2">{{ rubric }}</h2>
 <div class="container-fluid mb-2">
@@ -13,29 +16,27 @@
         <div class="col">&nbsp;</div>
         <form class="col-md-auto form-inline">
             {% bootstrap_form form show_label=False %}
-            {%bootstrap_button content='Поиск' button_type='submit' %}
+            {% bootstrap_button content='Искать' button_type='submit' %}
         </form>
     </div>
 </div>
-{% if boards %}
+{% if bbs %}
 <ul class="list-unstyled">
-    {% for board in boards %}
+    {% for bb in bbs %}
     <li class="media my-5 p-3 border">
         {% url 'main:detail' rubric_pk=rubric.pk pk=board.pk as url %}
         <a href="{{ url }}{{ all }}">
-            {% if board.image %}
-            <img src="{% thumbnail board.image 'default' %}" alt="image" class="mr-3">
-            {% else %}
-            <img src="{% static 'main/empty.jpg' %}" alt="image" class="mr-3">
-            {% endif %}
+        {% if board.image %}
+        <img class="mr-3" src="{% thumbnail board.image 'default' %}">
+        {% else %}
+        <img class="mr-3" src="{% static 'main/empty.jpg' %}">
+        {% endif %}
         </a>
         <div class="media-body">
-            <h3><a href="{{ url }}{{ all }}">
-                {{ board.title }}
-            </a></h3>
-            <div>{{ board.content }}</div>
-            <p class="text-right font-weight-bold">{{ board.price }} грн.</p>
-            <p class="text-right font-italic">{{ board.created_at }}</p>
+          <h3><a href="{{ url }}{{ all }}">{{ board.title }}</a></h3>
+          <div>{{ board.content }}</div>
+          <p class="text-right font-weight-bold">{{ board.price }} руб.</p>
+          <p class="text-right font-italic">{{ board.created_at }}</p>
         </div>
     </li>
     {% endfor %}

@@ -184,7 +184,7 @@ def profile_board_detail(request, pk):
     board = get_object_or_404(Board, pk=pk)
     ais = board.additionalimage_set.all()
     context = {'board': board, 'ais': ais}
-    return render(request, 'main/profile_bb_detail.html', context)
+    return render(request, 'main/profile_board_detail.html', context)
 
 @login_required
 def profile_board_add(request):

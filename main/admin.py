@@ -4,6 +4,7 @@ from .models import AdvUser, Board, AdditionalImage
 from .utilities import send_activation_notification
 from .models import SuperRubric, SubRubric
 from .forms import SubRubricForm
+from .models import Comment
 
 def send_activation_notifications(model_admin, request, queryset):
     for rec in queryset:
@@ -84,7 +85,14 @@ class BoardAdmin(admin.ModelAdmin):
         'is_active')
     inlines = (AdditionalImageInline,)
 
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('board',
+        'author',
+        'created_at',)
+    fields =('content', 'is_active')
+
 admin.site.register(AdvUser, AdvUserAdmin)
 admin.site.register(SuperRubric, SuperRubricAdmin)
 admin.site.register(SubRubric, SubRubricAdmin)
 admin.site.register(Board, BoardAdmin)
+admin.site.register(Comment, CommentAdmin)

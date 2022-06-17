@@ -1,37 +1,36 @@
 {% extends "layout/basic.html" %}
 
-{% load bootstrap4 %}
-{% load static %}
 {% load thumbnail %}
+{% load static %}
 
 {% block title %}Профиль пользователя{% endblock %}
 
 {% block content %}
-<h2> Профиль пользователя {{ user.username }}</h2>
+<h2>Профиль пользователя {{ user.username }}</h2>
 {% if user.first_name and user.last_name %}
-<p>Здравствуйте, {{ user.first_name }} {{user.last_name }}!</p>
+<p>Здравствуйте, {{ user.first_name }} {{ user.last_name }}!</p>
 {% else %}
 <p>Здравствуйте!</p>
 {% endif %}
-<h3>Ваши объявления:</h3>
+<p><a href="{% url 'main:profile_board_add' %}">Добавить объявление</a></p>
 {% if boards %}
+<h3>Ваши объявления</h3>
 <ul class="list-unstyled">
     {% for board in boards %}
     <li class="media my-5 p-3 border">
-        {% url 'main:detail' rubric_pk=rubric.pk pk=board.pk as url %}
-        <a href="{{ url }}{{ all }}">
-            {% if board.image %}
-            <img class="mr-3" src="{% thumbnail board.image 'default' %}">
-            {% else %}
-            <img src="{% static 'main/empty.jpg' %}" alt="image" class="mr-3">
-            {% endif %}
+        {% url 'main:profile_board_detail' pk=board.pk as url %}
+        <a href="{{ url }}">
+        {% if board.image %}
+        <img class="mr-3" src="{% thumbnail board.image 'default' %}">
+        {% else %}
+        <img class="mr-3" src="{% static 'main/empty.jpg' %}">
+        {% endif %}
         </a>
         <div class="media-body">
-            <h3><a href="{{ url }}{{ all }}">
-                {{ board.title }}
-            </a></h3>
+            <p>Рубрика: {{ board.rubric }}</p>
+            <h3><a href="{{ url }}">{{ board.title }}</a></h3>
             <div>{{ board.content }}</div>
-            <p class="text-right font-weight-bold">{{ board.price }} грн.</p>
+            <p class="text-right font-weight-bold">{{ board.price }} руб.</p>
             <p class="text-right font-italic">{{ board.created_at }}</p>
             <p class="text-right mt-2">
                 <a href="{% url 'main:profile_board_change' pk=board.pk %}">Исправить</a>
